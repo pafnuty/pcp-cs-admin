@@ -1,0 +1,55 @@
+/* ==========================================================================
+   Навигация */
+/* ========================================================================== */
+	.top_nav-container {
+		background-color: @blue;
+		background-position: 50% 60% !important;
+		color: @white;
+		padding: 0;
+		margin-bottom: 20px;
+		.main & {
+			margin-bottom: 0;
+		}
+	}
+	.top_nav {
+		margin: 0;
+		padding: 0;
+		.clearfix();
+
+		li {
+			margin: 0;
+			padding: 0;
+			list-style: none;
+			float: left;
+			&.selected {
+				a {
+					color: @white;
+					background: fadeout(@black, 90%);
+				}
+			}
+			&.buy-nav-item {
+				a {
+					background: fadeout(@white, 10);
+					color: @red;
+					&:hover {
+						background: @red;
+						color: @white;
+					}
+				}
+			}
+
+			a {
+				display: block;
+				padding: 20px;
+				color: lighten(@blue, 35%);
+				font-size: 16px;
+				text-decoration: none;
+				.transition();
+				&:hover {
+					color: @white;
+					background: darken(@blue, 15%);
+				}
+			}
+		}
+	}
+

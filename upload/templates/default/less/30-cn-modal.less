@@ -1,0 +1,57 @@
+.cn-modal {
+	margin: 0 auto;
+	background: @white;
+	position: relative;
+	.box-shadow(~"0 0 20px rgba(0,0,0,.8)");
+
+	&-close,
+	&-close.mfp-close {
+		color: @white;
+		font-size: 40px;
+		cursor: pointer;
+		margin: 10px 5px 0 0;
+		line-height: 36px;
+		padding: 0;
+		display: inline-block;
+
+	} //.cn-modal-close
+
+	&-header {
+		color: @white;
+		background: @blue;
+		font-size: 20px;
+		padding: 10px 40px 10px 20px;
+		
+		h2,
+		.h2 {
+			margin: 0;
+			color: @white;
+		}
+	} //.cn-modal-header
+
+	&-content {
+		padding: 20px;
+	} //.cn-modal-content
+
+	&-footer {
+		padding: 20px;
+	} //.cn-modal-footer
+
+	&-error {
+		margin: -20px -20px 0;
+		padding: 10px 20px;
+		background: @yellow;
+		p {
+			margin: 0;
+			font-weight: bold;
+		}
+	} //.cn-modal-error
+
+	&-errors {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	} //.cn-modal-errors
+
+
+} //.cn-modal

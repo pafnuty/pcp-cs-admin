@@ -1,0 +1,6 @@
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+	# Пока отключил ЧПУ - не время разбитаться с этим
+	# RewriteCond %{REQUEST_FILENAME} !-d
+	# RewriteRule ^([^.]+)/?$ index.php?&page=$1 [L]
+</IfModule>

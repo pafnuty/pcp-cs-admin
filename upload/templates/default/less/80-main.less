@@ -1,0 +1,201 @@
+/* ==========================================================================
+   Основное */
+/* ========================================================================== */
+	body {
+		// padding: 0 20px;
+	}
+	.container {
+		padding: 20px 0;
+		&.container-dark {
+			background: @gray1Dark;
+			color: @white;
+		}
+		&.top_nav-container {
+			padding: 0;
+		}
+
+		&.container-blue {
+			background: @blue url('../images/bg_blue.jpg') no-repeat 50% 0;
+			color: @white;
+			&.footer-container {
+				background-position: 50% 100%;
+			}
+		}
+
+		@media (max-width: @screenTablet) {
+			padding: 20px 10px;
+		}
+	}
+	header {
+		.btn {
+			margin: 0 5px 8px 0;
+		}
+	}
+
+	.modal-white {
+		position: relative;
+		background: @white;
+		padding: 20px 10px 10px 10px;
+		.border-radius(5px);
+		.box-shadow(~"0 0 10px rgba(0,0,0,.5)");
+	}
+	.modal-content {
+		margin-top: 20px;
+	}
+	.modal-close {
+		position: absolute;
+		top: 5px;
+		right: 5px;
+		width: 26px;
+		text-align: center;
+		cursor: pointer;
+		// height: 20px;
+		font-size: 32px;
+		line-height: 32px;
+
+	}
+.logo-block {
+	height: 62px;
+	line-height: 60px;
+	vertical-align: middle;
+}
+.logo {
+	display: inline-block;
+	margin-top: 15px;
+	margin-bottom: 15px;
+	&-big {
+		margin: 30px 0;
+	}
+}
+
+.col-border {
+	@media (min-width: @screenTablet) {
+
+		border-top: solid 1px @grayDark;
+		padding: 10px;
+
+		.col-mb-12 .content:last-child & {
+			border-bottom: solid 1px @grayDark;
+		}
+	}
+}
+
+.border-block {
+	border: solid 1px @grayDark;
+	.col {
+		@media (min-width: @screenTablet) {
+			padding: 10px;
+		}
+	}
+}
+
+.content-border-bottom {
+	border-top: solid 1px @grayDark;
+	padding: 10px 0;
+	&:first-child {
+		border-top: 0;
+	}
+	&:hover {
+		background: @gray;
+	}
+}
+
+.add-punkt-form {
+	margin-top: 10px;
+	margin-bottom: 10px;
+	background: @gray;
+}
+
+
+.bp-pager {
+	.clearfix;
+
+	[data-page-num],
+	.current {
+		.btn();
+		.button-size(~"5px 8px", 3px, 12px, @baseLineHeight, @inputBorderRadius);
+		margin-bottom: 7px;
+		min-width: 16px;
+	}
+	.current {
+		cursor: default;
+		background: @red;
+		.box-shadow(~"0 2px 0"darken(@red, 10%));
+	}
+}
+
+.base-loader {
+	position: relative;
+	&:after {
+		.after;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		z-index: 1;
+		background: fadeout(@white, 10%) url(/templates/snippets/blockpro/base-loader.gif) 50% 50% no-repeat;
+		.transition();
+	}
+}
+
+.inner-nav {
+	.active {
+		.btn {
+			background: @red;
+			.box-shadow(~"0 2px 0"darken(@red, 10%));
+		}
+	}
+}
+.hilite {
+	background: fadeout(@yellow, 90%);
+}
+.margin-list {
+	> li {
+		margin-bottom: 10px;
+	}
+}
+code {
+	padding: 2px 4px;
+	color: @red;
+	background-color: @gray;
+	border: 1px solid darken(@gray, 10);
+	font-size: 12px;
+	border-radius: 5px;
+}
+.footer-container {
+	a {
+		color: @white;
+	}
+}
+
+
+/* ==========================================================================
+   Прочие стили */
+/* ========================================================================== */
+	
+	.gist-header {
+		&.h3 {
+			font: normal 24px/28px @Kelson;
+			margin-bottom: 1em;
+		}
+		a {
+			color: @blue;
+			text-decoration: none;
+			border-bottom: solid 1px fadeout(@blue, 50%);
+			&:hover {
+				color: @red;
+				border-bottom-color: @red;
+			}
+		}
+		.gist-key {
+			font-family: @Arial;
+			font-size: 80%;
+			vertical-align: text-top;
+		}
+	}
+	.gist-description {
+		margin-bottom: 1em;
+	}
+
+
+
