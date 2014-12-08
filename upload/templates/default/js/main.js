@@ -15,19 +15,18 @@ doc
 	.on('click', '.modal-close', function () {
 		$.magnificPopup.close();
 	})
-	.on('click', '[data-page-num]', function (event) {
-
+	.on('click browserNavigation', '[data-page-num]', function (event) {
 		var $this = $(this),
 			$block = $this.closest('[data-list-id]'),
 			listId = $block.data('listId'),
 			pageNum = $this.data('pageNum'),
 			laddaBtn = $this.ladda(),
-			pageLink = '&p=' + pageNum,
-			loc = location.href,
-			url = loc.replace(/&p=([^&]+)/gi, ''); // Удаляем все упоминания про &p=XX
-			
-			console.log(location.href);
-			console.log(url);
+			u = new Url,
+			url;
+
+		u.query.p = pageNum;
+		url = u;
+
 		laddaBtn.ladda('start');
 
 		$.ajax({
@@ -40,16 +39,13 @@ doc
 		})
 		.done(function (data) {
 			$block.html($(data).find('[data-list-id="' + listId + '"]').html());
-	
-			if (history.pushState) {
-				window.history.pushState(null, null, url + '&p=' + pageNum);
+			
+			if (history.pushState && event.type != 'browserNavigation') {
+				window.history.pushState(null, null, url);
 			}
 		})
 		.fail(function () {
 			console.log("error");
-		})
-		.always(function () {
-			// laddaBtn.ladda('stop');
 		});
 
 	})
@@ -60,6 +56,19 @@ doc
 
 		console.log('функция в разработке. Нужно передавать данные в ajax скрипт и звменять соответствующую строку таблицы на инпуты с формой.', $data);
 	});
+
+	$(window).on('popstate', function (e) {
+		var u = new Url(location.href);
+
+		if (u.query.p) {
+			$('[data-page-num="' + u.query.p + '"]').trigger('browserNavigation');
+		} else {
+			if ($('[data-page-num="1"]').length) {
+				$('[data-page-num="1"]').trigger('browserNavigation');
+			};
+		}
+	});
+
 
 
 

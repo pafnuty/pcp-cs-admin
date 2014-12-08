@@ -64,6 +64,15 @@ class adminCore {
 			return false; 
 		});
 
+		// Добавляем модификатор для получения информации о пользователе по его ID
+		$this->tpl->addModifier(
+			'getUserInfo', function ($id = 0) {
+				$_userInfo = new tplModifier();
+				$userInfo = $_userInfo->getUserInfo($id);
+				return $userInfo;
+			}
+		);
+
 		// БД
 		$this->db = $this->getDb();
 	}

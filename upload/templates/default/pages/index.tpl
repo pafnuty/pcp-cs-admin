@@ -21,11 +21,34 @@
 					</thead>
 					<tbody>
 						{foreach $arResult.list as $key => $item}
-							{set $expires = $item.l_started + ($item.l_expires*60*60*24)}
-							{set $lastWeek = time() - (7*60*60*24)}
+							{if $item.l_expires !== 'never'}
+								{set $expires = $item.l_expires}
+								{set $lastWeek = time() - (7*60*60*24)}
+								{set $expireClass}
+									{if $expires <= time()}
+										text-red
+									{elseif $expires <= $lastWeek}
+										text-orange
+									{else}
+										text-muted
+									{/if}
+								{/set}
+								{set $expiresFormated}
+									{$expires|date:"d.m.Y H:i:s"}
+								{/set} 
+							{else}
+								{set $expiresFormated = 'Никогда'}
+								{set $expireClass = 'text-muted'}
+							{/if}
 							<tr>
 								<th scope="row">{$item.id}</th>
-								<td data-title="Юзер">{$item.user_name}</td>
+								<td data-title="Юзер">
+									{$item.user_name}
+									{set $userInfo = $item.id|getUserInfo}
+									{if $userInfo.email}
+										<br><a href="mailto:{$userInfo.email}">{$userInfo.email}</a>										
+									{/if}
+								</td>
 								<td data-title="Ключ активации">{$item.l_key}</td>
 								<td data-title="Домен">
 									{$item.l_domain}
@@ -36,7 +59,7 @@
 											<span class="text-orange">Ожидает активации</span>
 										{case '1'}
 											Активна
-											<span class="btn btn-gray btn-mini">Активировать</span>
+											<span class="btn btn-gray btn-mini">Деактивировать</span>
 										{case '2'}
 											<span class="text-red">Истек срок</span>
 											<span class="btn btn-gray btn-mini">Напомнить клиенту</span>
@@ -49,16 +72,7 @@
 								</td>
 								<td data-title="Дата начала">{$item.l_started|date:"d.m.Y H:i:s"}</td>
 								<td data-title="Дата окончания">
-									{set $expireClass}
-										{if $expires <= time()}
-											text-red
-										{elseif $expires <= $lastWeek}
-											text-orange
-										{else}
-											text-muted
-										{/if}
-									{/set}
-									<span class="{$expireClass}">{$expires|date:"d.m.Y H:i:s"}</span>
+									<span class="{$expireClass}">{$expiresFormated}</span>
 								</td>
 							</tr>
 							
