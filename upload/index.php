@@ -47,10 +47,11 @@ $tpl['arResult'] = array();
 // IP пользователя
 $tpl['arResult']['userIp'] = $auth->user_ip;
 
-
+// Текущая страница
 $tpl['curPage'] = $_SERVER['REQUEST_URI'];
 
-
+// Адрес сайта
+$tpl['homeUrl'] = $admin->config['home_url'];
 
 if(isset($_REQUEST['action']) and $_REQUEST['action'] == "logout") {
     $auth->logout();
@@ -98,16 +99,34 @@ $pagerConfig = array(
 	'current_page'   => $curPageNum,
 );
 
+// Записываем переменную фильтра
+$requestFilter = $_REQUEST['filter'];
+
+
 // Определяем необходимые данные для вывода в шаблон
 switch ($clearAdminPage) {
 	case 'methods':
-		$getList = $admin->getList('license_methods', $curPageNum, $admin->config['perPage'], 'ASC');
+		$allowed = array('id','name','secret_key','check_period','enforce');
+		$filter = $admin->db->filterArray($requestFilter, $allowed);
+
+		$getList = $admin->getList('license_methods', $filter, $curPageNum, $admin->config['perPage'], 'ASC');
 		$list = $getList['items'];
 
 		$pagerConfig['total_items'] = $getList['count'];
 		
 		$tpl['title'] = 'Список методов';
 		$tpl['h1'] = 'Список методов';	
+
+		break;
+
+	case 'logs':
+		$getList = $admin->getList('events_logs', array('name' => 'key_check'), $curPageNum, $admin->config['perPage'], 'ASC', 'date');
+		$list = $getList['items'];
+
+		$pagerConfig['total_items'] = $getList['count'];
+		
+		$tpl['title'] = 'Логи проверки лицензий';
+		$tpl['h1'] = 'Логи проверки лицензий';	
 
 		break;
 
@@ -137,7 +156,10 @@ switch ($clearAdminPage) {
 	
 	default:
 
-		$getList = $admin->getList('license_keys', $curPageNum, $admin->config['perPage'], 'ASC');
+		$allowed = array('id','user_id','user_name','l_expires','l_domain','status','l_method_id', 'l_key');
+		$filter = $admin->db->filterArray($requestFilter, $allowed);
+
+		$getList = $admin->getList('license_keys', $filter, $curPageNum, $admin->config['perPage'], 'ASC');
 		$list = $getList['items'];
 
 		$pagerConfig['total_items'] = $getList['count'];
@@ -149,6 +171,8 @@ switch ($clearAdminPage) {
 }
 
 $tpl['arResult']['list'] = 	$list;
+
+
 
 // Сформированный блок с постраничкой
 if ($pagerConfig['total_items']) {

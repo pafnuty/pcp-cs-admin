@@ -45,4 +45,5 @@ class tplModifier extends adminCore {
 
 		return $userinfo;
 	}
+
 }

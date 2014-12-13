@@ -2,7 +2,7 @@
 	<div class="content">
 		<div class="col col-mb-12">
 			<p>
-				<span class="btn mfp-open-ajax" data-mfp-src="/admin/ajax/add.php?page=addmethod&ajax=Y&do=newmethod"><i class="fa fa-plus"></i> Добавить новый метод</span>
+				<span class="btn mfp-open-ajax" data-mfp-src="/admin/ajax/add.php?page=addmethod&ajax=Y"><i class="fa fa-plus"></i> Добавить новый метод</span>
 			</p>
 			<div class="list" data-list-id="methods-list">
 				<table class="responsive-table">
@@ -13,6 +13,7 @@
 							<th scope="col">Секретный ключ</th>
 							<th scope="col">Период проверки</th>
 							<th scope="col">Что проверять</th>
+							<th scope="col">&nbsp;</th>
 							<th scope="col">&nbsp;</th>
 						</tr>
 					</thead>
@@ -25,6 +26,7 @@
 								<td data-title="Период проверки">{$item.check_period}</td>
 								<td data-title="Что проверять">{$item.enforce}</td>
 								<td data-title=""><span class="btn btn-gray btn-small btn-ajax-edit" data-do="editmethod" data-id="{$item.id}">Изменить</span></td>
+								<td data-title=""><a href="{$homeUrl}/?filter[l_method_id]={$item.id}" class="btn btn-small"><i class="fa fa-filter"></i> ключи</a></td>
 							</tr>							
 						{/foreach}
 					</tbody>

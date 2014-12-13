@@ -39,6 +39,7 @@ doc
 		})
 		.done(function (data) {
 			$block.html($(data).find('[data-list-id="' + listId + '"]').html());
+			$block.find('.styler').selectize();
 			
 			if (history.pushState && event.type != 'browserNavigation') {
 				window.history.pushState(null, null, url);
@@ -54,7 +55,68 @@ doc
 			$data = $this.data(),
 			$row = $('[data-method-id="' + $data.id + '"]');
 
-		console.log('функция в разработке. Нужно передавать данные в ajax скрипт и звменять соответствующую строку таблицы на инпуты с формой.', $data);
+		console.log('функция в разработке. Нужно передавать данные в ajax скрипт и заменять соответствующую строку таблицы на инпуты с формой.', $data);
+	})
+	.on('focus', '.onfocus-select', function() {
+		$(this).select();
+	})
+	.on('change', '.status-change', function() {
+		var $this = $(this),
+			key = $this.data('key'),
+			status = $this.find('option:selected').val();
+
+		swal({
+			title: 'Изменить статус ключа?',
+			// text: "Нобходимо подтвердить действие",
+			type: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#50bd98',
+			confirmButtonText: 'Да',
+			closeOnConfirm: false
+		}, function (isConfirm) {
+			if (isConfirm) {
+				confirmButtonColor: '#50bd98';
+				if (status == '1') {
+					swal({
+						title: 'Ошибка!',
+						text: 'Активировать лицензию может только клиент.',
+						type: 'error'
+					}, function () {
+						location.reload();
+					});
+				} else {
+					$.ajax({
+							url: '/admin/ajax/keystatus.php',
+							data: {
+								key: key,
+								status: status
+							}
+						})
+						.done(function (data) {
+							var title = 'Ошибка :(',
+								type = 'error';
+
+							if (data == 'ok') {
+								title = 'Статус изменён!';
+								type = 'success';
+							};
+							swal({
+								title: title,
+								// text: 'Статус изменён.',
+								type: type
+							}, function () {
+								location.reload();
+							});
+						})
+						.fail(function () {
+							console.log('error');
+						});
+				};
+			} else {
+				///
+			}
+			
+		});
 	});
 
 	$(window).on('popstate', function (e) {
@@ -89,33 +151,9 @@ jQuery(document).ready(function ($) {
 		type: 'ajax',
 		callbacks : {
 			ajaxContentAdded: function () {
-				$('.styler').selectize();
+				this.content.find('.styler').selectize();
 			}
 		}
 	});
 
 });
-
-
-/**
- * Функция для реализации эффекта загрузки блока
- * Добавляет/удаляет заданный класс для заданного блока
- * вся работа по оформлению ложится на css
- *
- * @author ПафНутиЙ <pafnuty10@gmail.com>
- *
- * @param  {str} id        ID блока
- * @param  {str} method    start/stop
- * @param  {str} className Имя класса, добавляемого блоку
- */
-function base_loader (id, method, className) {
-	var $block = $('#' + id),
-		cname = (className) ? className : 'base-loader';
-	if (method == 'start') {
-		$block.addClass(cname);
-	};
-
-	if (method == 'stop') {
-		$block.removeClass(cname);
-	};
-}

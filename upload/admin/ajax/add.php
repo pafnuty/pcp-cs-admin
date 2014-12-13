@@ -67,6 +67,44 @@ $tpl['templateFolder'] = '/'. $admin->config['templateFolder'];
 
 // Определяем необходимые данные для вывода в шаблон
 switch ($clearAdminPage) {
+	case 'addkey':
+		// $getList = $admin->getList('license_methods', $curPageNum, $admin->config['perPage'], 'ASC');
+		
+		$methods = $admin->getAll('license_methods', 'id, name');
+		// echo "<pre class='dle-pre'>"; print_r($methods); echo "</pre>";
+		
+		$tpl['title'] = 'Добавить новый ключ';
+		$tpl['add'] = false;
+		$tpl['addResult'] = false;
+		$tpl['arResult']['methods'] = $methods;
+		// echo "<pre class='dle-pre'>"; print_r($methods); echo "</pre>";
+		
+
+
+		if ($_REQUEST['add'] == 'y') {
+			include_once(API_DIR. '/core/server.class.php');
+			include_once(API_DIR. '/core/mysqli.class.php');
+			include_once(API_DIR. '/config.php');
+			
+			$server = new Mofsy\License\Server\Core\Protect($config);
+
+			$method = ($_REQUEST['method'] > 0) ? (int)$_REQUEST['method'] : false;
+			$expires = (isset($_REQUEST['expires'])) ? strtotime($_REQUEST['expires']) : false;
+			if ($_REQUEST['never'] == 'y') {
+				$expires = 'never';
+			}
+		
+			$newKey = $server->licenseKeyCreate($expires, $method, $status);
+
+			if ($newKey) {
+				$tpl['title'] = 'Ключ создан!';
+				$tpl['add'] = true;
+				$tpl['addResult'] = $newKey;
+			}
+		}
+
+		break;
+
 	case 'addmethod':
 		// $getList = $admin->getList('license_methods', $curPageNum, $admin->config['perPage'], 'ASC');
 		

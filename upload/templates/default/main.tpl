@@ -64,6 +64,7 @@ email:   pafnuty10@gmail.com
 		<script src="{$templateFolder}/js/jquery.ladda.production.min.js"></script>
 		<script src="{$templateFolder}/js/jquery.magnificpopup.min.js"></script>
 		<script src="{$templateFolder}/js/jquery.selectize.min.js"></script>
+		<script src="{$templateFolder}/js/sweet-alert.min.js"></script>
 		<script src="{$templateFolder}/js/url.min.js"></script>
 		<script src="{$templateFolder}/js/main.js"></script>
 	</body>
