@@ -9,9 +9,14 @@
 - Вывод списка методов
 - Постраничка на ajax
 - Добавление нового метода на ajax
+- Создание лицензионных ключей вручную
+- Cмена статуса лицензии
+- Просмотр логов
+- Фильтрация ключей по методам
+
 
 ## Что нужно реализовать:
-- Дохрена всего, поэтому писать пока не буду :smile:
+- По большому счёту только редактирование методов, но это не критично.
 
 ## Установка
 1. Заливаем содержимое папки upload на сервер
@@ -31,3 +36,5 @@
 - [MagnificPopup](https://github.com/dimsemenov/Magnific-Popup)
 - [selectize.js](https://github.com/brianreavis/selectize.js)
 - [form](https://github.com/malsup/form) - для ajax форм
+- [SweetAlert](https://github.com/Mikhus/jsurl)
+- [jsurl](https://github.com/t4t5/sweetalert)
