@@ -1,21 +1,18 @@
-{if $add == 'y'}
+{if $edit == 'y'}
 	<div class="mfp-close cn-modal-close">&times;</div>
 	<div class="cn-modal-header">
 		<div class="h2">{$title}</div>
 	</div> <!-- .cn-modal-header -->
 	<div class="cn-modal-content clearfix">
-		Метод №{$addResult.id} <b>{$addResult.name}</b> успешно создан!
-		<p>Секретный ключ: {$addResult.secret_key}</p>
-		<p>Период проверки: {$addResult.check_period}</p>
-		<p>Проверяемые данные: {$addResult.enforce}</p>			
+		Метод №{$arResult.id} <b>{$arResult.name}</b> отредактирован.			
 	</div>	
 {else}
-	<form action="/admin/ajax/add.php?page=addmethod&ajax=Y" data-ajax-submit class="cn-modal col-6">
-		<input type="hidden" name="add" value="y">
+	<form action="/admin/ajax/edit.php?page=editmethod&ajax=Y&id={$arResult.id}" data-ajax-submit class="cn-modal col-6">
+		<input type="hidden" name="edit" value="y">
 		<div class="cn-modal">
 			<div class="mfp-close cn-modal-close">&times;</div>
 			<div class="cn-modal-header">
-				<div class="h2">{$title}</div>
+				<div class="h2">{$title}: "{$arResult.name}"</div>
 			</div> <!-- .cn-modal-header -->
 			<div class="cn-modal-content clearfix">
 
@@ -24,7 +21,7 @@
 						Название
 					</div>
 					<div class="col col-mb-12 col-7 col-dt-8 form-control">
-						<input class="input" type="text" name="name" value="">
+						<input class="input" type="text" name="name" value="{$arResult.name}">
 					</div>
 				</div>
 			
@@ -33,7 +30,7 @@
 						Секретный ключ
 					</div>
 					<div class="col col-mb-12 col-7 col-dt-8 form-control">
-						<input class="input" type="text" name="secret_key" value="">
+						<input class="input" type="text" name="secret_key" value="{$arResult.secret_key}">
 					</div>
 				</div>
 			
@@ -42,7 +39,7 @@
 						Период проверки (дни)
 					</div>
 					<div class="col col-mb-12 col-7 col-dt-8 form-control">
-						<input class="input" type="number" name="check_period" value="">
+						<input class="input" type="number" name="check_period" value="{$arResult.check_period}">
 					</div>
 				</div>
 			
@@ -51,12 +48,13 @@
 						Что проверять
 					</div>
 					<div class="col col-mb-12 col-7 col-dt-8 form-control">
+						{set $enforce = $arResult.enforce|split}
 						<select class="styler" name="enforce[]" id="enforce" multiple>
-							<option value="domain">домен</option>
-							<option value="user_id">ID пользователя</option>
-							<option value="user_name">имя пользователя</option>
-							<option value="ip">ip сервера</option>
-							<option value="server_hostname">хост сервера</option>
+							<option value="domain" {if 'domain' in $enforce} selected{/if}>домен</option>
+							<option value="user_id" {if 'user_id' in $enforce} selected{/if}>ID пользователя</option>
+							<option value="user_name" {if 'user_name' in $enforce} selected{/if}>имя пользователя</option>
+							<option value="ip" {if 'ip' in $enforce} selected{/if}>ip сервера</option>
+							<option value="server_hostname" {if 'server_hostname' in $enforce} selected{/if}>хост сервера</option>
 						</select>
 					</div>
 				</div>
@@ -67,7 +65,7 @@
 						&nbsp;
 					</div>
 					<div class="col col-mb-12 col-7 col-dt-8 form-control">
-						<button class="btn ladda-button" type="submit" data-style="expand-left"><span class="ladda-label">Добавить метод</span></button>
+						<button class="btn ladda-button" type="submit" data-style="expand-left"><span class="ladda-label">Сохранить метод</span></button>
 					</div>
 				</div>
 			</div> <!-- .cn-modal-content -->

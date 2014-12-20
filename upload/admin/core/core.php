@@ -147,6 +147,15 @@ class adminCore {
 		return $arAll;
 	}
 
+	public function getElementById($id = 0, $table = 'license_methods', $fields = '*') {
+		$table = $this->db_prefix . '_' . $table;
+		$select = "SELECT ?p FROM ?n WHERE id = ?i";
+		
+		$element = $this->db->getRow($select, $fields, $table, $id);
+
+		return $element;
+	}
+
 	/**
 	 * Создание условий фильтрации в запросе
 	 * @param  array  $filter массив вида ключ => значение

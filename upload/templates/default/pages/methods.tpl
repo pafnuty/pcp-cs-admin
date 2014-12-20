@@ -25,7 +25,7 @@
 								<td data-title="Секретный ключ">{$item.secret_key}</td>
 								<td data-title="Период проверки">{$item.check_period}</td>
 								<td data-title="Что проверять">{$item.enforce}</td>
-								<td data-title=""><span class="btn btn-gray btn-small btn-ajax-edit" data-do="editmethod" data-id="{$item.id}">Изменить</span></td>
+								<td data-title=""><span class="btn btn-gray btn-small mfp-open-ajax" data-mfp-src="/admin/ajax/edit.php?page=editmethod&ajax=Y&id={$item.id}">Изменить</span></td>
 								<td data-title=""><a href="{$homeUrl}/?filter[l_method_id]={$item.id}" class="btn btn-small"><i class="fa fa-filter"></i> ключи</a></td>
 							</tr>							
 						{/foreach}

@@ -58,7 +58,7 @@ email:   pafnuty10@gmail.com
 			</div> <!-- .container -->
 		{/if}
 
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 		<script src="{$templateFolder}/js/cn.custom.form.js"></script>
 		<script src="{$templateFolder}/js/jquery.form.min.js"></script>
 		<script src="{$templateFolder}/js/jquery.ladda.production.min.js"></script>

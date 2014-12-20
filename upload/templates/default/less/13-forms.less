@@ -47,13 +47,22 @@
 			.border-radius(5px)
 		}
 
+		&.disabled,
+		&[disabled] {
+			background: @gray;
+			cursor: not-allowed;
+		}
+
 	} //.input
 	.input-block {
 		width: 100%;
 	}
 
 	.checkbox {
-		display:none;
+		// display:none;
+		position: fixed;
+		top: -100px;
+		left: -100px;
 
 		+ label {
 			cursor: pointer;
@@ -70,6 +79,7 @@
 				cursor: pointer;
 				border: solid 1px @inputBorder;
 				position: relative;
+				.transition;
 			}
 			&:hover,
 			&:focus {
@@ -95,10 +105,17 @@
 				.rotate;
 			}
 		}
+		&:focus + label span {
+			border-color: @inputFocusBorder;
+			.box-shadow(~"0 0 0 2px" fadeout(@inputFocusBorder, 50%));
+		}
 	}
 
 	.radio {
-		display:none;
+		// display:none;
+		position: fixed;
+		top: -100px;
+		left: -100px;
 
 		+ label {
 			cursor: pointer;
@@ -116,6 +133,7 @@
 				border: solid 1px @inputBorder;
 				position: relative;
 				.border-radius(10px);
+				.transition;
 			}
 			&:hover,
 			&:focus {
@@ -140,6 +158,11 @@
 				.border-radius(4px);
 			}
 		}
+
+		&:focus + label span {
+			border-color: @inputFocusBorder;
+			.box-shadow(~"0 0 0 2px" fadeout(@inputFocusBorder, 50%));
+		}
 	}
 
 	.quont-input {
@@ -161,8 +184,8 @@
 	.form-control {
 		.input {
 			margin-bottom: 0;
-			width: 360px;
-			max-width: 100%;
+			width: 100%;
+			max-width: 360px;
 		}
 	}
 

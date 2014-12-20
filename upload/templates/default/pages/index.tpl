@@ -43,7 +43,9 @@
 							<tr>
 								<th scope="row">{$item.id}</th>
 								<td data-title="Юзер">
-									{$item.user_name}
+									{if $item.user_id}
+										<small class="text-muted">[{$item.user_id}]</small>
+									{/if}{$item.user_name}
 									{set $userInfo = $item.id|getUserInfo}
 									{if $userInfo.email}
 										<br><a href="mailto:{$userInfo.email}">{$userInfo.email}</a>										

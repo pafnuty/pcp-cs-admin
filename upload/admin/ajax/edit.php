@@ -54,10 +54,6 @@ if ($auth->user_logged) {
 	$templateName = ($adminPage) ? 'pages/ajax/' . $clearAdminPage . '.tpl' : false;
 	$tpl['logged'] = true;
 } else {
-	// Если нет - подключаем форму авторизации и переопределяем переменную для switch
-	// $clearAdminPage = 'auth';
-	// $templateName = 'pages/auth.tpl';
-	// $tpl['logged'] = false;
 	die('Error!');
 }
 
@@ -74,74 +70,28 @@ $tpl['templateFolder'] = '/' . $admin->config['templateFolder'];
 
 // Определяем необходимые данные для вывода в шаблон
 switch ($clearAdminPage) {
-	case 'addkey':
-		// $getList = $admin->getList('license_methods', $curPageNum, $admin->config['perPage'], 'ASC');
+	case 'editmethod':
+		$tpl['title'] = 'Редактировать метод';
+		$tpl['edit'] = false;
+		$tpl['arResult'] = false;
 
-		$methods = $admin->getAll('license_methods', 'id, name');
-		// echo "<pre class='dle-pre'>"; print_r($methods); echo "</pre>";
+		$methodId = $_REQUEST['id'];
+		if ($methodId > 0) {
+			$tpl['arResult'] = $admin->getElementById($methodId);
 
-		$tpl['title'] = 'Добавить новый ключ';
-		$tpl['add'] = false;
-		$tpl['addResult'] = false;
-		$tpl['arResult']['methods'] = $methods;
-		// echo "<pre class='dle-pre'>"; print_r($methods); echo "</pre>";
+			if ($_REQUEST['edit'] == 'y') {
 
-		if ($_REQUEST['add'] == 'y') {
-			include_once API_DIR . '/core/server.class.php';
-			include_once API_DIR . '/core/mysqli.class.php';
-			include_once API_DIR . '/config.php';
+				$_REQUEST['enforce'] = (isset($_REQUEST['enforce'])) ? implode(',', $_REQUEST['enforce']) : false;
 
-			$server = new Mofsy\License\Server\Core\Protect($config);
+				$allowed = array('name','secret_key','check_period','enforce');
+				$data  = $admin->db->filterArray($_REQUEST,$allowed);	
 
-			$expires = (isset($_REQUEST['expires'])) ? strtotime($_REQUEST['expires']) : false;
-			if ($_REQUEST['never'] == 'y') {
-				$expires = 'never';
-			}
-			$method = ($_REQUEST['method'] > 0) ? (int) $_REQUEST['method'] : false;
+				$methodEdited = $admin->db->query("UPDATE ?n SET ?u WHERE id=?i", $admin->db_prefix . '_license_methods', $data, $methodId);
 
-			$status = 0;
-		
-			$domain_wildcard = ($_REQUEST['domain_wildcard'] > 0) ? (int) $_REQUEST['domain_wildcard'] : 0;
-			$l_name = (isset($_REQUEST['l_name'])) ? $_REQUEST['l_name'] : '';
-			$user_id = ($_REQUEST['user_id'] > 0) ? (int) $_REQUEST['user_id'] : 0;
-			$user_name = (isset($_REQUEST['user_name'])) ? $_REQUEST['user_name'] : '';
-
-			$newKey = $server->licenseKeyCreate($expires, $method, $status, $domain_wildcard, $l_name, $user_id, $user_name);
-
-			if ($newKey) {
-				$tpl['title'] = 'Ключ создан!';
-				$tpl['add'] = true;
-				$tpl['addResult'] = $newKey;
-			}
-		}
-
-		break;
-
-	case 'addmethod':
-		// $getList = $admin->getList('license_methods', $curPageNum, $admin->config['perPage'], 'ASC');
-
-		$tpl['title'] = 'Добавить новый метод';
-		$tpl['add'] = false;
-		$tpl['addResult'] = false;
-
-		if ($_REQUEST['add'] == 'y') {
-			include_once API_DIR . '/core/server.class.php';
-			include_once API_DIR . '/core/mysqli.class.php';
-			include_once API_DIR . '/config.php';
-
-			$server = new Mofsy\License\Server\Core\Protect($config);
-
-			$name = (isset($_REQUEST['name'])) ? trim($_REQUEST['name']) : false;
-			$secret_key = (isset($_REQUEST['secret_key'])) ? trim($_REQUEST['secret_key']) : false;
-			$check_period = (isset($_REQUEST['check_period'])) ? (int) $_REQUEST['check_period'] : 0;
-			$enforce = (isset($_REQUEST['enforce'])) ? implode(',', $_REQUEST['enforce']) : false;
-
-			$newmethodCreate = $server->licenseKeyMethodCreate($name, $secret_key, $check_period, $enforce);
-
-			if ($newmethodCreate) {
-				$tpl['title'] = 'Готово!';
-				$tpl['add'] = true;
-				$tpl['addResult'] = $newmethodCreate;
+				if ($methodEdited) {
+					$tpl['title'] = 'Готово!';
+					$tpl['edit'] = true;
+				}
 			}
 		}
 

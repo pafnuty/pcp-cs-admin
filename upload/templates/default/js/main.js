@@ -50,13 +50,6 @@ doc
 		});
 
 	})
-	.on('click', '.btn-ajax-edit', function(event) {
-		var $this = $(this),
-			$data = $this.data(),
-			$row = $('[data-method-id="' + $data.id + '"]');
-
-		console.log('функция в разработке. Нужно передавать данные в ajax скрипт и заменять соответствующую строку таблицы на инпуты с формой.', $data);
-	})
 	.on('focus', '.onfocus-select', function() {
 		$(this).select();
 	})
@@ -117,6 +110,14 @@ doc
 			}
 			
 		});
+	})
+	.on('change', '#never', function() {
+		var $inp = $('#expires');
+		if ($(this).is(':checked')) {
+			$inp.prop('disabled', true);
+		} else {
+			$inp.prop('disabled', false);
+		}
 	});
 
 	$(window).on('popstate', function (e) {
