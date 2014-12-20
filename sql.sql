@@ -44,18 +44,8 @@ CREATE TABLE IF NOT EXISTS `pcp_license_keys` (
   `l_method_id` int(11) NOT NULL COMMENT 'Идентификатор метода проверки лицензии',
   `l_last_check` int(11) NOT NULL COMMENT 'Дата последней проверки',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=0 ;
 
---
--- Дамп данных таблицы `pcp_license_keys`
---
-
-INSERT INTO `pcp_license_keys` (`id`, `user_id`, `user_name`, `l_name`, `l_started`, `l_expires`, `l_key`, `l_domain`, `l_domain_wildcard`, `l_ip`, `l_directory`, `l_server_hostname`, `l_server_ip`, `l_status`, `l_method_id`, `l_last_check`) VALUES
-(1, 1, 'ПафНутиЙ', 'blockpro', '1409588136', '365', '1211-456-456-456-456', 'domain1.loc,domanib.wow', 0, '127.0.0.1', '/***/', 'BudgetBudget', '124.125.698.123', 0, 1, 0),
-(3, 2, 'Иван', 'олололо', '', '', '1234-3215-56-98789', 'yandex.ru', 0, '', '', '', '', 4, 1, 0),
-(2, 1, 'ПафНутиЙ', 'YandexMa', '1409588136', '15', 'AAAA-DDDD-FFFF-FFFF-FFFF', 'domain1.loc', 0, '127.0.0.1', '/***/', 'Worldwide Gross', '124.125.698.123', 2, 1, 0);
-
--- --------------------------------------------------------
 
 --
 -- Структура таблицы `pcp_license_logs`
@@ -75,7 +65,7 @@ CREATE TABLE IF NOT EXISTS `pcp_license_logs` (
   `l_server_ip` text NOT NULL COMMENT 'Айпи адрес сервера,на которой установлена копия для данной лицензии',
   `l_method_id` int(11) NOT NULL COMMENT 'Идентификатор метода проверки лицензии',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=0 ;
 
 -- --------------------------------------------------------
 
@@ -90,23 +80,8 @@ CREATE TABLE IF NOT EXISTS `pcp_license_methods` (
   `check_period` int(11) NOT NULL COMMENT 'Период проверки в днях',
   `enforce` text NOT NULL COMMENT 'Что проверять',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=9 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=0 ;
 
---
--- Дамп данных таблицы `pcp_license_methods`
---
-
-INSERT INTO `pcp_license_methods` (`id`, `name`, `secret_key`, `check_period`, `enforce`) VALUES
-(1, 'Первый метод', 'sdf45a6d4sf6hm4f65n4z6f8b7a6f4b64b6fd84m645vb6zsdd4fb6sd4fb6', 10, 'domain,server_hostname'),
-(2, 'Второй метод', 'FHHFKJHFKJHFKJF546565df6d5f46d54fs6df', 10, 'domain'),
-(3, 'Третий метод', '6545646464654654sdsdsdsdsd46s45fd6s5d46sa', 5, 'domain,server_ip'),
-(4, 'Четвертый метод', '4as6d54a6sd46as4d6as54d6a5s4dfgh65dfg', 15, 'domain,server_ip,ip'),
-(5, '', '454654', 0, ''),
-(6, 'Тестовый метод 1', 'd654sd465s4d6f54sa6df', 15, ''),
-(7, 'Тестовый метод 2', 'sdf546s54f6sd', 5, ''),
-(8, 'тест 3', '4sa6e4gd6fgk465jkh;4', 0, 'domain,user_id,user_name');
-
--- --------------------------------------------------------
 
 --
 -- Структура таблицы `pcp_users`
@@ -121,19 +96,8 @@ CREATE TABLE IF NOT EXISTS `pcp_users` (
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=0 ;
 
---
--- Дамп данных таблицы `pcp_users`
---
-
-INSERT INTO `pcp_users` (`user_id`, `email`, `password`, `name`, `user_group`) VALUES
-(1, 'admin@admin.ru', 'c3284d0f94606de1fd2af172aba15bf3', 'admin', 1),
-(2, 'user@user.ru', '0d8d5cd06832b29560745fe4e1b941cf', 'user', 4);
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
 --
 -- Структура таблицы `pcp_events_logs`
@@ -146,7 +110,26 @@ CREATE TABLE IF NOT EXISTS `pcp_events_logs` (
   `event_data` text NOT NULL COMMENT 'Данные о событии',
   PRIMARY KEY (`id`),
   KEY `name` (`name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=0 ;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+--
+-- Структура таблицы `pcp_login_log`
+--
+
+CREATE TABLE IF NOT EXISTS `pcp_login_log` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `ip` varchar(16) NOT NULL DEFAULT '',
+  `count` smallint(6) NOT NULL DEFAULT '0',
+  `date` int(11) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ip` (`ip`),
+  KEY `date` (`date`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=0 ;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
