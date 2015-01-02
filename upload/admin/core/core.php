@@ -114,12 +114,15 @@ class adminCore {
 	 *
 	 * @return array                Массив с результатами и количеством элеметнов в таблице
 	 */
-	public function getList($name = 'license_keys', $filter = array(), $pageNum = 0, $perPage = 10, $order = 'ASC', $orderFielsd) {
+	public function getList($name = 'license_keys', $filter = array(), $pageNum = 0, $perPage = 10, $order = 'ASC', $orderFielsd = 'id') {
 
 		$name = $this->db_prefix . '_' . $name;
 		$start = ($pageNum > 0) ? $perPage * $pageNum - $perPage : 0;
 
 		$where = $this->getFilteredWheres($filter);
+		if ($orderFielsd) {
+			$where .= ' ORDER BY ' . $orderFielsd . ' ' . $order;
+		}
 		$select = "SELECT * FROM ?n ?p LIMIT ?i, ?i";
 
 		$arList['items'] = $this->db->getAll($select, $name, $where, $start, $perPage);

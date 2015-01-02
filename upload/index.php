@@ -120,7 +120,7 @@ switch ($clearAdminPage) {
 		break;
 
 	case 'logs':
-		$getList = $admin->getList('events_logs', array('name' => 'key_check'), $curPageNum, $admin->config['perPage'], 'ASC', 'date');
+		$getList = $admin->getList('events_logs', array('name' => 'key_check'), $curPageNum, $admin->config['perPage'], 'DESC', 'date');
 		$list = $getList['items'];
 
 		$pagerConfig['total_items'] = $getList['count'];
