@@ -42,5 +42,5 @@
 - [MagnificPopup](https://github.com/dimsemenov/Magnific-Popup)
 - [selectize.js](https://github.com/brianreavis/selectize.js)
 - [form](https://github.com/malsup/form) - для ajax форм
-- [SweetAlert](https://github.com/Mikhus/jsurl)
-- [jsurl](https://github.com/t4t5/sweetalert)
+- [jsurl](https://github.com/Mikhus/jsurl)
+- [SweetAlert](https://github.com/t4t5/sweetalert)
