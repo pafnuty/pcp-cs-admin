@@ -220,8 +220,8 @@ class Mysqli
     public function display_error($error, $error_num, $query = '')
     {
         echo <<<HTML
-			Error ($error_num):<br /> <b>{$error}</b><br /><br />
-			<b>SQL query:</b><br /><br />{$query}
+            Error ($error_num):<br /> <b>{$error}</b><br /><br />
+            <b>SQL query:</b><br /><br />{$query}
 HTML;
 
         die();

@@ -1,3 +1,4 @@
+Options -Indexes
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 	# Пока отключил ЧПУ - не время разбитаться с этим

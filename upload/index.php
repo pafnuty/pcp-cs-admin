@@ -102,14 +102,25 @@ $pagerConfig = array(
 // Записываем переменную фильтра
 $requestFilter = $_REQUEST['filter'];
 
+// Записываем переменную направления сортировки
+$order = ($_REQUEST['order'] == 'desc') ? 'DESC' : 'ASC';
+
+// Обрабатываем поиск
+$searchText = $_REQUEST['search'];
+$tpl['searchInputText'] = strip_tags($searchText);
+
+
+// Записываем переменную, отвечающую за поле сортировки
+$orderField = (isset($_REQUEST['orderby']) && $_REQUEST['orderby'] != '') ? (string)$_REQUEST['orderby'] : 'id';
 
 // Определяем необходимые данные для вывода в шаблон
 switch ($clearAdminPage) {
 	case 'methods':
 		$allowed = array('id','name','secret_key','check_period','enforce');
 		$filter = $admin->db->filterArray($requestFilter, $allowed);
+		$orderField = $admin->db->whiteList($orderField, $allowed);
 
-		$getList = $admin->getList('license_methods', $filter, $curPageNum, $admin->config['perPage'], 'ASC');
+		$getList = $admin->getList('license_methods', $filter, $curPageNum, $admin->config['perPage'], $order, $orderField);
 		$list = $getList['items'];
 
 		$pagerConfig['total_items'] = $getList['count'];
@@ -120,7 +131,14 @@ switch ($clearAdminPage) {
 		break;
 
 	case 'logs':
-		$getList = $admin->getList('events_logs', array('name' => 'key_check'), $curPageNum, $admin->config['perPage'], 'DESC', 'date');
+	
+		if (isset($searchText) && $searchText != '') {
+			$search = array(
+				'fields' => array('event_data'),
+				'text' => $searchText,
+			);
+		}
+		$getList = $admin->getList('events_logs', array('name' => 'key_check'), $curPageNum, 50, 'DESC', 'date', $search);
 		$list = $getList['items'];
 
 		$pagerConfig['total_items'] = $getList['count'];
@@ -156,10 +174,16 @@ switch ($clearAdminPage) {
 	
 	default:
 
-		$allowed = array('id','user_id','user_name','l_expires','l_domain','status','l_method_id', 'l_key');
+		$allowed = array('id','user_id','user_name','l_expires','l_domain','l_status','l_method_id', 'l_key');
 		$filter = $admin->db->filterArray($requestFilter, $allowed);
-
-		$getList = $admin->getList('license_keys', $filter, $curPageNum, $admin->config['perPage'], 'ASC');
+		$orderField = $admin->db->whiteList($orderField, $allowed);
+		if (isset($searchText) && $searchText != '') {
+			$search = array(
+				'fields' => array('user_name','l_domain','l_key'),
+				'text' => $searchText,
+			);
+		}
+		$getList = $admin->getList('license_keys', $filter, $curPageNum, $admin->config['perPage'], $order, $orderField, $search);
 		$list = $getList['items'];
 
 		$pagerConfig['total_items'] = $getList['count'];

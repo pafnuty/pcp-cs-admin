@@ -13,7 +13,8 @@ email:   pafnuty10@gmail.com
 		<meta charset="utf-8">
 		<title>{$title}</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="stylesheet" href="{$templateFolder}/css/style.css">
+		{set $lessFile}{$templateFolder}/less/style.less{/set}
+		<link rel="stylesheet" href="{less_compile inputFile=$lessFile nocompress="1"}">
 	</head>
 	<body>
 		{if !$logged}

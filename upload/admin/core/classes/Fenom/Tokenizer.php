@@ -83,7 +83,7 @@ class Tokenizer
     public static $macros = array(
         self::MACRO_STRING  => array(
             \T_ABSTRACT      => 1, \T_ARRAY         => 1, \T_AS            => 1, \T_BREAK         => 1,
-            \T_BREAK         => 1, \T_CASE          => 1, \T_CATCH         => 1, \T_CLASS         => 1,
+            \T_CASE          => 1, \T_CATCH         => 1, \T_CLASS         => 1,
             \T_CLASS_C       => 1, \T_CLONE         => 1, \T_CONST         => 1, \T_CONTINUE      => 1,
             \T_DECLARE       => 1, \T_DEFAULT       => 1, \T_DIR           => 1, \T_DO            => 1,
             \T_ECHO          => 1, \T_ELSE          => 1, \T_ELSEIF        => 1, \T_EMPTY         => 1,
@@ -186,25 +186,48 @@ class Tokenizer
                 if ($token === '"' || $token === "'" || $token === "`") {
                     $this->quotes++;
                 }
-                $tokens[] = array(
+                $token = array(
                     $token,
                     $token,
-                    "",
                     $line,
                 );
-                $i++;
             } elseif ($token[0] === \T_WHITESPACE) {
                 $tokens[$i - 1][2] = $token[1];
-            } else {
-                $tokens[] = array(
-                    $token[0],
-                    $token[1],
-                    "",
-                    $line = $token[2],
-                    token_name($token[0]) // debug
-                );
-                $i++;
+                continue;
+            } elseif ($token[0] === \T_DNUMBER) { // fix .1 and 1.
+                if(strpos($token[1], '.') === 0) {
+                    $tokens[] = array(
+                        '.',
+                        '.',
+                        "",
+                        $line = $token[2]
+                    );
+                    $token = array(
+                        T_LNUMBER,
+                        ltrim($token[1], '.'),
+                        $line = $token[2]
+                    );
+                } elseif(strpos($token[1], '.') === strlen($token[1]) - 1) {
+                    $tokens[] = array(
+                        T_LNUMBER,
+                        rtrim($token[1], '.'),
+                        "",
+                        $line = $token[2]
+                    );
+                    $token = array(
+                        '.',
+                        '.',
+                        $line = $token[2]
+                    );
+                }
             }
+            $tokens[] = array(
+                $token[0],
+                $token[1],
+                "",
+                $line = $token[2]
+            );
+            $i++;
 
         }
         unset($tokens[-1]);

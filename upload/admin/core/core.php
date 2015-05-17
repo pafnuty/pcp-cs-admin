@@ -56,13 +56,77 @@ class adminCore {
 		// Добавляем в шаблонизатор функцию, которая будет отмечать текущий пункт в меню
 		// Пример:
 		// <a href="/?page=methods" class="{selected get="methods"}">Методы</a>
+		// <a href="/?page=methods" class="{selected request="page" value="methods"}">Методы</a>
 
 		$this->tpl->addFunction("selected", function ($params) {
 
 			if (strpos($_GET['page'], $params['get']) !== false) {
 				return 'selected';
 			}
+			if (isset($params['request']) && $_REQUEST[$params['request']] == $params['value']) {
+				return 'selected';
+			}
+
 			return false;
+
+		});
+
+		// Компиляция LESS файлов
+		// Используем
+		// {set $lessFile}{$templateFolder}/less/style.less{/set}
+		// <link rel="stylesheet" href="{less_compile inputFile=$lessFile}">
+		$this->tpl->addFunction("less_compile", function ($params) {
+
+			// Файл template_styles.less, лежащий в текущем шаблоне сайта
+			$inputFile    = $_SERVER['DOCUMENT_ROOT'] . $params['inputFile']; 
+
+			// Файл .css - который подключается к шаблону
+			$outputFile   = (isset($params['outputFile'])) ? $_SERVER['DOCUMENT_ROOT'] . $params['outputFile'] : str_ireplace('less', 'css', $inputFile); 
+
+			// true для отключения сжатия выходящего файла.
+			$nocompress       = (isset($params['nocompress'])) ? $params['nocompress'] : false; 
+
+			// false для показа ошибок компиляции вверху страницы (по умолчанию показываются js-алертом);
+			$alertError	  = (isset($params['alertError'])) ? $params['alertError'] : false; 
+				
+			// Выполняем функцию компиляции
+			try {
+				$cacheFile = $inputFile.".cache";
+
+				if (file_exists($cacheFile)) {
+					$cache = unserialize(file_get_contents($cacheFile));
+				} else {
+					$cache = $inputFile;
+				}
+
+				// Подключаем класс для компиляции less 
+				// require "lessphp.class.php";
+				$less = new lessc;
+				if ($nocompress) {
+					// Если запрещено сжатие - форматируем по нормальному с табами вместо пробелов.
+					$formatter = new lessc_formatter_classic;
+			        $formatter->indentChar = "\t";
+			        $less->setFormatter($formatter);
+				} else {
+					// Иначе сжимаем всё в одну строку.
+					$less->setFormatter('compressed');
+				}
+				// Массив с данными разультата компиляции
+				$newCache = $less->cachedCompile($cache);
+
+				if (!is_array($cache) || $newCache["updated"] > $cache["updated"]) {
+					file_put_contents($cacheFile, serialize($newCache));
+					file_put_contents($outputFile, $newCache['compiled']);
+				}
+			} catch (exception $e) {
+				// Если что-то пошло не так - скажем об этом пользователю способом, указанным в настройках и запишем в лог.
+				$logError = str_replace($_SERVER['DOCUMENT_ROOT'], '', $e->getMessage());
+				$showError = ($alertError) ? '<script>alert("Less error: '.str_replace('"', ' ', $logError).'")</script>' : '<div style="text-align: center; background: #fff; color: red; padding: 5px;">Less error: '.$logError.'</div>';
+
+				echo $showError;
+
+			}
+			return str_replace($_SERVER['DOCUMENT_ROOT'], '', $outputFile);
 
 		});
 
@@ -102,32 +166,59 @@ class adminCore {
 	}
 
 	/**
-	 * Метод для получения списка элементов (пока в разработке)
+	 * Метод для получения списка элементов
 	 * @param  string  $name        Имя таблицы, из которой будем отбирать данные
 	 * @param  array   $filter      Поля для фильтрации (поле => условие выборки)
 	 * @param  integer $pageNum     Номер страницы
 	 * @param  integer $perPage     Кол-во элементов, выводимых на страницу
 	 * @param  string  $order       Направление сортировки
-	 * @param  string  $orderFielsd поле, по которому будем сортировать
+	 * @param  string  $orderField поле, по которому будем сортировать
+	 * @param  array   $search      Поля для поиска и текст, который нужно искать: array('fields'=>array('field1','field2'), 'text'=>'искомый текст')
 	 *
 	 * @todo  доработать сорировку, пока сортировать по разным полям нельзя :()
 	 *
 	 * @return array                Массив с результатами и количеством элеметнов в таблице
 	 */
-	public function getList($name = 'license_keys', $filter = array(), $pageNum = 0, $perPage = 10, $order = 'ASC', $orderFielsd = 'id') {
-
+	public function getList($name = 'license_keys', $filter = array(), $pageNum = 0, $perPage = 10, $order = 'ASC', $orderField = 'id', $search = array()) {
+		// Имя таблицы в БД
 		$name = $this->db_prefix . '_' . $name;
+
+		// С какой записи начинаем
 		$start = ($pageNum > 0) ? $perPage * $pageNum - $perPage : 0;
 
+		// Обрабатываем фильтр отбора
 		$where = $this->getFilteredWheres($filter);
-		if ($orderFielsd) {
-			$where .= ' ORDER BY ' . $orderFielsd . ' ' . $order;
+
+		// Если был произведён поиск
+		if (isset($search['text'])) {
+			// Обрабатываем фразу
+			$searchText = $this->db->parse('?s', '%' . $search['text'] . '%');
+			$arSearchInsert = array();
+
+			// Подготавливаем поля для передачи в запрос
+			foreach ($search['fields'] as $field) {
+				$arSearchInsert[] = $this->db->parse('?n', $field) . ' LIKE ' . $searchText;
+			}
+
+			// В зависимости от наличия фильтра подставим нужный текст в запрос
+			$isFilterCondition = (count($filter) > 0) ? ' AND ' : ' WHERE ';
+			// Добавим условие запроса
+			$where .= $isFilterCondition . implode(' OR ', $arSearchInsert);
 		}
+
+		// Если указана сортировка
+		if ($orderField) {
+			$where .= ' ORDER BY ' . $orderField . ' ' . $order;
+		}
+		// Формируем маску запроса
 		$select = "SELECT * FROM ?n ?p LIMIT ?i, ?i";
 
+		// Выполняем запрос на получение элементов
 		$arList['items'] = $this->db->getAll($select, $name, $where, $start, $perPage);
+		// Выполняем запрос на получения счётчика всех элементов
 		$arList['count'] = $this->db->getOne('SELECT COUNT(*) as count FROM ?n ?p', $name, $where);
 
+		// Возвращаем массив с данными
 		return $arList;
 	}
 
@@ -137,15 +228,15 @@ class adminCore {
 	 * @param  string $name        имя таблицы (без префикса)
 	 * @param  string $fields      поля таблицы
 	 * @param  string $order       направления сортировки
-	 * @param  string $orderFielsd по какому полю сортировать
+	 * @param  string $orderField по какому полю сортировать
 	 * @return array               массив с элементами
 	 */
-	public function getAll($name = 'license_methods', $fields = '*', $order = 'ASC', $orderFielsd = 'id') {
+	public function getAll($name = 'license_methods', $fields = '*', $order = 'ASC', $orderField = 'id') {
 
 		$name = $this->db_prefix . '_' . $name;
 		$select = "SELECT ?p FROM ?n ORDER BY ?s ?p";
 
-		$arAll = $this->db->getAll($select, $fields, $name, $orderFielsd, $order);
+		$arAll = $this->db->getAll($select, $fields, $name, $orderField, $order);
 
 		return $arAll;
 	}

@@ -136,21 +136,20 @@ class Compiler
         $key     = null;
         $before  = $body = array();
         $prepend = "";
-        if ($tokens->is(T_VARIABLE)) {
-            $from    = $scope->tpl->parseTerm($tokens, $is_var);
-            if($is_var) {
-                $check = '!empty('.$from.')';
-            } else {
-                $scope["var"] = $scope->tpl->tmpVar();
-                $prepend = $scope["var"].' = (array)('.$from.');';
-                $from = $check = $scope["var"];
-            }
-        } elseif ($tokens->is('[')) {
+        if ($tokens->is('[')) {
             $count = 0;
             $from = $scope->tpl->parseArray($tokens, $count);
             $check = $count;
         } else {
-            throw new UnexpectedTokenException($tokens, null, "tag {foreach}");
+            $from    = $scope->tpl->parseExpr($tokens, $is_var);
+            if($is_var) {
+                $check = '!empty('.$from.') && (is_array('.$from.') || '.$from.' instanceof \Traversable)';
+            } else {
+                $scope["var"] = $scope->tpl->tmpVar();
+                $prepend = $scope["var"].' = '.$from.';';
+                $from  = $scope["var"];
+                $check = 'is_array('.$from.') && count('.$from.') || ('.$from.' instanceof \Traversable)';
+            }
         }
         $tokens->get(T_AS);
         $tokens->next();
@@ -193,9 +192,9 @@ class Compiler
         $body           = $body ? implode("; ", $body) . ";" : "";
         $scope["after"] = $scope["after"] ? implode("; ", $scope["after"]) . ";" : "";
         if ($key) {
-            return "$prepend if($check) { $before foreach($from as $key => $value) { $body";
+            return "$prepend if($check) {\n $before foreach($from as $key => $value) { $body";
         } else {
-            return "$prepend if($check) { $before foreach($from as $value) { $body";
+            return "$prepend if($check) {\n $before foreach($from as $value) { $body";
         }
     }
 
@@ -236,9 +235,11 @@ class Compiler
      * @throws Error\UnexpectedTokenException
      * @throws Error\InvalidUsageException
      * @return string
+     * @codeCoverageIgnore
      */
     public static function forOpen(Tokenizer $tokens, Tag $scope)
     {
+        trigger_error("Fenom: tag {for} deprecated, use {foreach 1..4 as \$value} (in {$scope->tpl->getName()}:{$scope->line})", E_USER_DEPRECATED);
         $p = array(
             "index" => false,
             "first" => false,
@@ -309,6 +310,7 @@ class Compiler
      * @param Tokenizer $tokens
      * @param Tag $scope
      * @return string
+     * @codeCoverageIgnore
      */
     public static function forElse($tokens, Tag $scope)
     {
@@ -322,6 +324,7 @@ class Compiler
      * @param Tokenizer $tokens
      * @param Tag $scope
      * @return string
+     * @codeCoverageIgnore
      */
     public static function forClose($tokens, Tag $scope)
     {
@@ -589,12 +592,10 @@ class Compiler
     {
         $tpl  = $scope->tpl;
         $name = $scope["name"];
-
         if (isset($tpl->blocks[$name])) { // block defined
             $block = & $tpl->blocks[$name];
             if ($block['use_parent']) {
                 $parent = $scope->getContent();
-
                 $block['block'] = str_replace($block['use_parent'] . " ?>", "?>" . $parent, $block['block']);
             }
             if (!$block["import"]) { // not from {use} - redefine block
@@ -625,7 +626,7 @@ class Compiler
     {
         $block_scope = $scope->tpl->getParentScope('block');
         if (!$block_scope['use_parent']) {
-            $block_scope['use_parent'] = "/* %%parent#" . mt_rand(0, 1e6) . "%% */";
+            $block_scope['use_parent'] = "/* %%parent#{$scope['name']}%% */";
         }
         return $block_scope['use_parent'];
     }
@@ -650,10 +651,10 @@ class Compiler
     public static function stdFuncParser(Tokenizer $tokens, Tag $tag)
     {
         if(is_string($tag->callback)) {
-            return $tag->out($tag->callback . "(" . self::toArray($tag->tpl->parseParams($tokens)) . ', $tpl)');
+            return $tag->out($tag->callback . "(" . self::toArray($tag->tpl->parseParams($tokens)) . ', $tpl, $var)');
         } else {
             return '$info = $tpl->getStorage()->getTag('.var_export($tag->name, true).');'.PHP_EOL.
-            $tag->out('call_user_func($info["function"], '.self::toArray($tag->tpl->parseParams($tokens)).', $tpl)');
+            $tag->out('call_user_func_array($info["function"], array('.self::toArray($tag->tpl->parseParams($tokens)).', $tpl, &$var))');
         }
     }
 
@@ -711,10 +712,10 @@ class Compiler
     {
         $tag->restore(\Fenom::AUTO_ESCAPE);
         if(is_string($tag->callback)) {
-            return $tag->out($tag->callback . "(" . $tag["params"] . ', ob_get_clean(), $tpl)');
+            return $tag->out($tag->callback . "(" . $tag["params"] . ', ob_get_clean(), $tpl, $var)');
         } else {
             return '$info = $tpl->getStorage()->getTag('.var_export($tag->name, true).');'.PHP_EOL.
-            $tag->out('call_user_func($info["function"], ' . $tag["params"] . ', ob_get_clean(), $tpl)');
+            $tag->out('call_user_func_array($info["function"], array(' . $tag["params"] . ', ob_get_clean(), $tpl, &$var))');
         }
     }
 
@@ -924,28 +925,28 @@ class Compiler
         if (!$tokens->valid()) {
             return;
         }
-        $tokens->next()->need('(')->next();
-        if ($tokens->is(')')) {
-            return;
-        }
-        while ($tokens->is(Tokenizer::MACRO_STRING, T_VARIABLE)) {
-            $param = $tokens->current();
-            if ($tokens->is(T_VARIABLE)) {
-                $param = ltrim($param, '$');
-            }
+        $tokens->next();
+        if($tokens->is('(') || !$tokens->isNext(')')){
             $tokens->next();
-            $args[] = $param;
-            if ($tokens->is('=')) {
-                $tokens->next();
-                if ($tokens->is(T_CONSTANT_ENCAPSED_STRING, T_LNUMBER, T_DNUMBER) || $tokens->isSpecialVal()) {
-                    $defaults[$param] = $tokens->getAndNext();
-                } else {
-                    throw new InvalidUsageException("Macro parameters may have only scalar defaults");
+            while ($tokens->is(Tokenizer::MACRO_STRING, T_VARIABLE)) {
+                $param = $tokens->current();
+                if ($tokens->is(T_VARIABLE)) {
+                    $param = ltrim($param, '$');
                 }
+                $tokens->next();
+                $args[] = $param;
+                if ($tokens->is('=')) {
+                    $tokens->next();
+                    if ($tokens->is(T_CONSTANT_ENCAPSED_STRING, T_LNUMBER, T_DNUMBER) || $tokens->isSpecialVal()) {
+                        $defaults[$param] = $tokens->getAndNext();
+                    } else {
+                        throw new InvalidUsageException("Macro parameters may have only scalar defaults");
+                    }
+                }
+                $tokens->skipIf(',');
             }
-            $tokens->skipIf(',');
+            $tokens->skipIf(')');
         }
-        $tokens->skipIf(')');
         $scope["macro"] = array(
             "name"      => $scope["name"],
             "args"      => $args,

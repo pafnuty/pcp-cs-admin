@@ -173,32 +173,47 @@ code {
    Прочие стили */
 /* ========================================================================== */
 	
-	// .gist-header {
-	// 	&.h3 {
-	// 		font: normal 24px/28px @Kelson;
-	// 		margin-bottom: 1em;
-	// 	}
-	// 	a {
-	// 		color: @blue;
-	// 		text-decoration: none;
-	// 		border-bottom: solid 1px fadeout(@blue, 50%);
-	// 		&:hover {
-	// 			color: @red;
-	// 			border-bottom-color: @red;
-	// 		}
-	// 	}
-	// 	.gist-key {
-	// 		font-family: @Arial;
-	// 		font-size: 80%;
-	// 		vertical-align: text-top;
-	// 	}
-	// }
-	// .gist-description {
-	// 	margin-bottom: 1em;
-	// }
-
-
 	.status-change {
 		width: 210px;
+	}
+	
+	th.order-col {
+		padding: 0 !important;
+		&.selected,
+		&:hover {
+			background: @green;
+			border-color: @green;
+		}
+	}
+	.sort-span {
+		cursor: pointer;
+		display: block;
+		padding: .75em 18px .75em 10px;
+		position: relative;
+
+
+		&:after,
+		&:before {
+			.after;
+			width: 0;
+			height: 0;
+			top: 50%;
+			right: 5px;
+			border: solid 5px transparent;
+		}
+		&:after {
+			margin-top: -11px;
+			border-bottom-color: fadeout(@white, 60%);
+			.selected.desc & {
+				border-bottom-color: @white;
+			}
+		}
+		&:before {
+			margin-top: 1px;
+			border-top-color: fadeout(@white, 60%);
+			.selected.asc & {
+				border-top-color: @white;
+			}
+		}
 	}
 

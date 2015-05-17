@@ -8,11 +8,50 @@
 				<table class="responsive-table">
 					<thead>
 						<tr>
-							<th scope="col">ID</th>
-							<th scope="col">Имя</th>
-							<th scope="col">Секретный ключ</th>
-							<th scope="col">Период проверки</th>
-							<th scope="col">Что проверять</th>
+							{if $.request['order'] == 'desc'}
+								{set $order = 'asc'}
+							{else}
+								{set $order = 'desc'}
+							{/if}
+							<th scope="col" class="order-col {selected request="orderby" value="id" class="selected"} {$order}" >
+								<span 
+									class="sort-span"
+									data-sort='{
+											"orderby": "id", "order": "{$order}"
+									}'>
+									ID
+								</span>
+							</th>
+							<th scope="col" class="order-col {selected request="orderby" value="name" class="selected"} {$order}"> 
+								<span
+									class="sort-span"
+									data-sort='{
+											"orderby": "name", "order": "{$order}"
+									}'>
+									Имя
+								</span>
+							</th>
+							<th scope="col">
+								Секретный ключ
+							</th>
+							<th scope="col" class="order-col {selected request="orderby" value="check_period" class="selected"} {$order}">
+								<span 
+									class="sort-span"
+									data-sort='{
+											"orderby": "check_period", "order": "{$order}"
+									}'>
+									Период проверки
+								</span>
+							</th>
+							<th scope="col" class="order-col {selected request="orderby" value="enforce" class="selected"} {$order}">
+								<span 
+									class="sort-span"
+									data-sort='{
+											"orderby": "enforce", "order": "{$order}"
+									}'>
+									Что проверять
+								</span>
+							</th>
 							<th scope="col">&nbsp;</th>
 							<th scope="col">&nbsp;</th>
 						</tr>
@@ -21,7 +60,7 @@
 						{foreach $arResult.list as $key => $item}
 							<tr data-method-id="{$item.id}">
 								<th scope="row">{$item.id}</th>
-								<td data-title="Имя">{$item.name }</td>
+								<td data-title="Имя">{$item.name}</td>
 								<td data-title="Секретный ключ">{$item.secret_key}</td>
 								<td data-title="Период проверки">{$item.check_period}</td>
 								<td data-title="Что проверять">{$item.enforce}</td>

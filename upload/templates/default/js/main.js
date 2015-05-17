@@ -25,7 +25,7 @@ doc
 			url;
 
 		u.query.p = pageNum;
-		url = u;
+		url = u.toString();
 
 		laddaBtn.ladda('start');
 
@@ -118,6 +118,18 @@ doc
 		} else {
 			$inp.prop('disabled', false);
 		}
+	})
+	.on('click', '[data-sort]', function(e) {
+		var $data = $(this).data('sort'),
+			u = new Url;
+
+		$.each($data, function(index, val) {
+			u.query[index] = val;
+		});
+		if (u.query.p) {
+			u.query.p = 1;
+		};
+		location = u.toString();
 	});
 
 	$(window).on('popstate', function (e) {

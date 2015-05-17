@@ -3,20 +3,87 @@
 <div class="content">
 	<div class="content">
 		<div class="col col-mb-12">
-			<p>
-				<span class="btn mfp-open-ajax" data-mfp-src="/admin/ajax/add.php?page=addkey&ajax=Y"><i class="fa fa-plus"></i> Добавить новый ключ</span>
-			</p>
+			<div class="content">
+				<div class="col col-mb-12 col-6">
+					<p>
+						<span class="btn mfp-open-ajax" data-mfp-src="/admin/ajax/add.php?page=addkey&ajax=Y"><i class="fa fa-plus"></i> Добавить новый ключ</span>
+					</p>
+				</div>
+				<div class="col col-mb-12 col-6 ta-right">
+					<form method="GET" class="mt20">
+						{if $.get.filter}
+							{foreach $.get.filter as $key => $value}
+								<input type="hidden" name="filter[{$key}]" value="{$value}">
+							{/foreach}
+						{/if}
+						<input type="text" name="search" class="input" placeholder="Поиск по лицензиям" value="{$searchInputText}">
+					</form>
+				</div>
+			</div>
 			<div class="list" data-list-id="licence-list">
 				<table class="responsive-table">
 					<thead>
 						<tr>
-							<th scope="col">ID</th>
-							<th scope="col">Юзер</th>
+							{if $.request['order'] == 'desc'}
+								{set $order = 'asc'}
+							{else}
+								{set $order = 'desc'}
+							{/if}
+							<th scope="col" class="order-col {selected request="orderby" value="id" class="selected"} {$order}">
+								<span 
+									class="sort-span"
+									data-sort='{
+											"orderby": "id", "order": "{$order}"
+									}'>
+									ID
+								</span>
+							</th>
+							<th scope="col" class="order-col {selected request="orderby" value="user_name" class="selected"} {$order}">
+								<span 
+									class="sort-span"
+									data-sort='{
+											"orderby": "user_name", "order": "{$order}"
+									}'>
+									Юзер
+								</span>
+							</th>
 							<th scope="col">Ключ активации</th>
-							<th scope="col">Домен</th>
-							<th scope="col">Статус</th>
-							<th scope="col">Дата начала</th>
-							<th scope="col">Дата окончания</th>
+							<th scope="col" class="order-col {selected request="orderby" value="l_domain" class="selected"} {$order}">
+								<span 
+									class="sort-span"
+									data-sort='{
+											"orderby": "l_domain", "order": "{$order}"
+									}'>
+									Домен
+								</span>
+							</th>
+							<th scope="col" class="order-col {selected request="orderby" value="l_status" class="selected"} {$order}">
+								<span 
+									class="sort-span"
+									data-sort='{
+											"orderby": "l_status", "order": "{$order}"
+									}'>
+									Статус
+								</span>
+							</th>
+							<th scope="col" class="order-col {selected request="orderby" value="l_started" class="selected"} {$order}">
+								<span 
+									class="sort-span"
+									data-sort='{
+											"orderby": "l_started", "order": "{$order}"
+									}'>
+									Начало
+								</span>
+							</th>
+							<th scope="col" class="order-col {selected request="orderby" value="l_expires" class="selected"} {$order}">
+								<span 
+									class="sort-span"
+									data-sort='{
+											"orderby": "l_expires", "order": "{$order}"
+									}'>
+									Окончание
+								</span>
+							</th>
 						</tr>
 					</thead>
 					<tbody>
